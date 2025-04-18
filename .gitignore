@@ -1,0 +1,6 @@
+my-project/
+*.env
+node_modules/
+*.log
+terraform.tfstate
+terraform.tfstate.backup

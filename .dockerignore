@@ -1,0 +1,14 @@
+node_modules
+build
+.cache
+my-project/node_modules
+my-project/build
+my-project/.cache
+.cache
+.env
+node_modules
+build
+.git
+.gitignore
+.dockerignore
+.env
