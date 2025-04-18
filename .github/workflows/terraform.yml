@@ -36,4 +36,5 @@ jobs:
             -var="security_group_id=sg-xxxxxxxx" \
             -var="instance_profile=ec2-role" \
             -var="ecr_repository_url=118273046134.dkr.ecr.us-east-1.amazonaws.com/vishal-strapi-app" \
-            -var="image_tag=${{ github.sha }}"
+            -var="image_tag=${{ github.sha }}" \
+            -var="ecr_registry=118273046134.dkr.ecr.us-east-1.amazonaws.com"
