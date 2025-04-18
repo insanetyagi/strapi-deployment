@@ -1,14 +1,7 @@
-node_modules
-build
-.cache
+# Ignore node_modules and other temp/build files
 my-project/node_modules
-my-project/build
 my-project/.cache
-.cache
-.env
-node_modules
-build
-.git
-.gitignore
-.dockerignore
-.env
+my-project/build
+my-project/.env
+my-project/tmp
+my-project/.tmp
