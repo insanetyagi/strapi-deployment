@@ -3,5 +3,4 @@ my-project/node_modules
 my-project/.cache
 my-project/build
 my-project/.env
-my-project/tmp
 my-project/.tmp
