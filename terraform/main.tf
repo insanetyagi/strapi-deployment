@@ -1,8 +1,10 @@
 provider "aws" {
-  region = var.aws_region
+  region     = var.aws_region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
-resource "aws_instance" "strapi" {
+resource "aws_instance" "strapi_ec2" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
@@ -10,11 +12,11 @@ resource "aws_instance" "strapi" {
   iam_instance_profile   = var.instance_profile
 
   user_data = templatefile("${path.module}/user_data.sh", {
+    image_tag = var.image_tag,
     ecr_url   = var.ecr_repository_url
-    image_tag = var.image_tag
   })
 
   tags = {
-    Name = "StrapiEC2Instance"
+    Name = "strapi-instance"
   }
 }
