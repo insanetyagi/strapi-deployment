@@ -1,6 +1,5 @@
 provider "aws" {
   region = var.aws_region
-
 }
 
 resource "aws_instance" "strapi_ec2" {
@@ -11,8 +10,9 @@ resource "aws_instance" "strapi_ec2" {
   iam_instance_profile   = var.instance_profile
 
   user_data = templatefile("${path.module}/user_data.sh", {
-    image_tag = var.image_tag,
-    ecr_url   = var.ecr_repository_url
+    image_tag    = var.image_tag,
+    ecr_url      = var.ecr_repository_url,
+    ecr_registry = "118273046134.dkr.ecr.us-east-1.amazonaws.com"
   })
 
   tags = {

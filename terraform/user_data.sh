@@ -5,7 +5,7 @@ sudo systemctl start docker
 sudo systemctl enable docker
 
 # Login to ECR
-aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${ecr_url%%/*}
+aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${ecr_registry}
 
 # Pull and run the Docker image from ECR
 sudo docker pull ${ecr_url}:${image_tag}

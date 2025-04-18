@@ -29,3 +29,7 @@ variable "image_tag" {
 variable "ecr_repository_url" {
   type = string
 }
+
+variable "ecr_registry" {
+  type = string
+}
