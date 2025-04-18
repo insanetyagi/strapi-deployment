@@ -1,6 +1,5 @@
-my-project/
-*.env
-node_modules/
-*.log
-terraform.tfstate
-terraform.tfstate.backup
+my-project/node_modules/
+my-project/.cache/
+my-project/.tmp/
+my-project/build/
+my-project/.env
