@@ -21,7 +21,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6  # you can change to latest if needed
+          terraform_version: 1.6.6
 
       - name: Terraform Init
         working-directory: terraform
@@ -38,4 +38,6 @@ jobs:
             -var="security_group_id=sg-0d0f7f5c40bce5085" \
             -var="ecr_repository_url=118273046134.dkr.ecr.us-east-1.amazonaws.com/vishal-strapi-app" \
             -var="image_tag=${{ github.sha }}" \
-            -var="ecr_registry=118273046134.dkr.ecr.us-east-1.amazonaws.com"
+            -var="ecr_registry=118273046134.dkr.ecr.us-east-1.amazonaws.com" \
+            -var="aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -var="aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"

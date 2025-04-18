@@ -8,11 +8,10 @@ sudo apt-get install -y docker.io awscli
 sudo systemctl start docker
 sudo systemctl enable docker
 
-# Set AWS credentials passed via environment variables (if needed for EC2 without IAM role)
-echo "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" | sudo tee -a /etc/profile
-echo "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" | sudo tee -a /etc/profile
-echo "export AWS_DEFAULT_REGION=us-east-1" | sudo tee -a /etc/profile
-source /etc/profile
+# Export AWS credentials passed from GitHub Actions into the instance
+export AWS_ACCESS_KEY_ID="${aws_access_key_id}"
+export AWS_SECRET_ACCESS_KEY="${aws_secret_access_key}"
+export AWS_DEFAULT_REGION="us-east-1"
 
 # Login to Amazon ECR
 aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${ecr_registry}
