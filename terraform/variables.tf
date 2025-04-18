@@ -18,10 +18,6 @@ variable "security_group_id" {
   type = string
 }
 
-variable "instance_profile" {
-  type = string
-}
-
 variable "image_tag" {
   type = string
 }
@@ -31,5 +27,13 @@ variable "ecr_repository_url" {
 }
 
 variable "ecr_registry" {
+  type = string
+}
+
+variable "aws_access_key_id" {
+  type = string
+}
+
+variable "aws_secret_access_key" {
   type = string
 }
