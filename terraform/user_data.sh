@@ -25,5 +25,6 @@ docker run -d \
   -e PORT=80 \
   -e NODE_ENV=production \
   -e APP_KEYS=mySuperSecretKey1,mySuperSecretKey2 \
+  -e JWT_SECRET=mySuperJWTSecretKey \
   -p 80:80 \
   ${ecr_url}:${image_tag} > /home/ubuntu/docker-run.log 2>&1
