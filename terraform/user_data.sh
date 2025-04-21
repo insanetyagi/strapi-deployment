@@ -27,5 +27,6 @@ docker run -d \
   -e APP_KEYS=mySuperSecretKey1,mySuperSecretKey2 \
   -e JWT_SECRET=myVerySecretJWTKey \
   -e API_TOKEN_SALT=myVerySecretSalt \
+  -e AUTH_SECRET=myVerySecretAuthKey \
   -p 80:80 \
   ${ecr_url}:${image_tag} > /home/ubuntu/docker-run.log 2>&1
