@@ -45,6 +45,7 @@ COPY --from=build /app .
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=80
+ENV APP_KEYS=mySuperSecretKey1,mySuperSecretKey2
 
 # Expose port 80
 EXPOSE 80
