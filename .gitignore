@@ -1,5 +1,36 @@
+# Node modules, build & cache
 my-project/node_modules/
 my-project/.cache/
 my-project/.tmp/
 my-project/build/
+
+# Environment files
 my-project/.env
+my-project/.env.*
+
+# OS junk
+*.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.*
+
+# Docker
+**/docker-compose.override.yml
+
+# Ignore ECR/Secrets if ever saved
+.env.ecr
+
+# IDE
+.vscode/
+.idea/
+
+# By default, enforce LF line endings
+* text=auto eol=lf

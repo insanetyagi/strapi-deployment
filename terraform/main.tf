@@ -7,6 +7,7 @@ resource "aws_instance" "strapi_ec2" {
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.security_group_id]
+  key_name               = "vishal" # Required for SSH
 
   user_data = templatefile("${path.module}/user_data.sh", {
     image_tag              = var.image_tag,
