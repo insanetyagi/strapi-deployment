@@ -19,14 +19,17 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 # Pull the Docker image
 docker pull ${ecr_url}:${image_tag}
 
-# Run the container with ALL required secrets
+# Run the container with all required secrets
 docker run -d \
   -e HOST=0.0.0.0 \
   -e PORT=80 \
   -e NODE_ENV=production \
   -e APP_KEYS=mySuperSecretKey1,mySuperSecretKey2 \
-  -e JWT_SECRET=myVerySecretJWTKey \
+  -e JWT_SECRET=myVerySecretJWT \
   -e API_TOKEN_SALT=myVerySecretSalt \
-  -e AUTH_SECRET=myVerySecretAuthKey \
+  -e ADMIN_JWT_SECRET=myVeryAdminJWTSecret \
+  -e TRANSFER_TOKEN_SALT=myTransferSalt \
+  -e FLAG_NPS=true \
+  -e FLAG_PROMOTE_EE=true \
   -p 80:80 \
   ${ecr_url}:${image_tag} > /home/ubuntu/docker-run.log 2>&1
