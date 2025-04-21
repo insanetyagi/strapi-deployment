@@ -18,6 +18,6 @@ resource "aws_instance" "strapi_ec2" {
   })
 
   tags = {
-    Name = "instance"
+    Name = "instance-1"
   }
 }

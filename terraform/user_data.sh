@@ -19,12 +19,13 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 # Pull the Docker image
 docker pull ${ecr_url}:${image_tag}
 
-# Run the container in detached mode on port 80
+# Run the container with ALL required secrets
 docker run -d \
   -e HOST=0.0.0.0 \
   -e PORT=80 \
   -e NODE_ENV=production \
   -e APP_KEYS=mySuperSecretKey1,mySuperSecretKey2 \
-  -e JWT_SECRET=mySuperJWTSecretKey \
+  -e JWT_SECRET=myVerySecretJWTKey \
+  -e API_TOKEN_SALT=myVerySecretSalt \
   -p 80:80 \
   ${ecr_url}:${image_tag} > /home/ubuntu/docker-run.log 2>&1
