@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'terraform2/**'
+      - '.github/workflows/action.yml'
 
 jobs:
   build:

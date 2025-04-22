@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Dockerfile'
+      - 'my-project/**'
+      - 'terraform2/**'
+      - '.github/workflows/action.yml'
 
 jobs:
   build-and-push:
@@ -12,6 +17,7 @@ jobs:
     env:
       ECR_REGISTRY: 118273046134.dkr.ecr.us-east-1.amazonaws.com
       ECR_REPOSITORY: vishal-strapi-fargate
+      IMAGE_TAG: latest
 
     steps:
       - name: Checkout code
@@ -24,15 +30,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Login to Amazon ECR
+      - name: Log in to Amazon ECR
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
 
       - name: Build Docker image
-        run: docker build -t $ECR_REPOSITORY ./ --file Dockerfile
+        run: |
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
 
       - name: Tag Docker image
-        run: docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        run: |
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Push Docker image
-        run: docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
