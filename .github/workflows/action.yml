@@ -8,9 +8,7 @@ on:
       - 'Dockerfile'
       - 'my-project/**'
       - 'terraform2/**'
-      - '.github/workflows/action.yml'
-    paths-ignore:
-      - '.github/workflows/ci.yml'  
+      - '.github/workflows/action.yml'  
 
 jobs:
   build-and-push:

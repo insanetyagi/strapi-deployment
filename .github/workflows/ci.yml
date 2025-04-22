@@ -7,6 +7,7 @@ on:
     paths-ignore:
       - 'terraform2/**'
       - '.github/workflows/action.yml'
+      - 'my-project/**'
 
 jobs:
   build:
