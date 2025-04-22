@@ -21,3 +21,5 @@ resource "aws_instance" "strapi_ec2" {
     Name = "instance-1"
   }
 }
+
+  #  test
