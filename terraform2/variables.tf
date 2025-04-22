@@ -11,5 +11,7 @@ variable "public_subnets" {
 }
 
 variable "ecr_image_url" {
-  default = "118273046134.dkr.ecr.us-east-1.amazonaws.com/vishal-strapi-app:c1e979169bd6348e9ba4339ccd287b2a002f8c84"
+  description = "ECR image URI with commit SHA tag - auto-injected by GitHub Actions"
+  type        = string
+  default     = "118273046134.dkr.ecr.us-east-1.amazonaws.com/vishal-strapi-fargate:latest"
 }
