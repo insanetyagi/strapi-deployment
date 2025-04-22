@@ -9,6 +9,8 @@ on:
       - 'my-project/**'
       - 'terraform2/**'
       - '.github/workflows/action.yml'
+    paths-ignore:
+      - '.github/workflows/ci.yml'  
 
 jobs:
   build-and-push:
