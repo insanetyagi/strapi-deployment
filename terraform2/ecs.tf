@@ -35,6 +35,15 @@ resource "aws_ecs_task_definition" "tyagi_task" {
       { name = "FLAG_NPS",            value = "true" },
       { name = "FLAG_PROMOTE_EE",     value = "true" }
     ]
+
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "/ecs/tyagi"
+        awslogs-region        = var.aws_region
+        awslogs-stream-prefix = "ecs/tyagi"
+      }
+    }
   }])
 }
 

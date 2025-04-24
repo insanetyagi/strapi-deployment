@@ -1,58 +1,90 @@
-Task 7: Monitoring & Alerting for Strapi on AWS ECS Fargate
-Overview
-This task focused on implementing CloudWatch monitoring and alerting for a Strapi application deployed on AWS ECS Fargate. The goal was to ensure the application is continuously observable and any performance issues trigger real-time alarms.
+# ✅ Task 7: Monitoring & Alerting for Strapi on AWS ECS Fargate
 
-Monitoring Setup
-CloudWatch Logs: Integrated with ECS to stream container logs in real-time.
+## 🧩 Overview
 
-CloudWatch Alarms: Configured for CPU and Memory utilization.
+This task focuses on implementing **CloudWatch monitoring and alerting** for the Strapi application deployed on **AWS ECS Fargate**. The objective is to ensure observability of system performance and real-time notification in case of resource exhaustion.
 
-CloudWatch Dashboard: Visual representation of app performance metrics.
+---
 
-Resources Involved
-✅ Log Group
-/ecs/strapi: Receives container logs via awslogs driver from ECS Task Definition.
+## 📊 Monitoring Setup
 
-✅ Alarms
-High CPU Utilization Alarm
-Triggers if average CPU > 80% for 2 minutes.
+- **CloudWatch Logs**  
+  Integrated with ECS to stream real-time container logs.
 
-High Memory Utilization Alarm
-Triggers if average Memory > 80% for 2 minutes.
+- **CloudWatch Alarms**  
+  Automatically trigger when CPU or memory crosses threshold limits.
 
-✅ Dashboard
-StrapiMonitoringDashboard
-Displays ECS service metrics like CPU and Memory usage in a clean time-series layout.
+- **CloudWatch Dashboard**  
+  Visual overview of ECS metrics like CPU and memory utilization.
 
-How It Works
-ECS task definition includes a logConfiguration block for AWS Logs.
+---
 
-Task logs are streamed into CloudWatch log group /ecs/strapi.
+## 🧱 Resources Provisioned
 
-Metric alarms continuously evaluate usage.
+### 🔹 Log Group
 
-Dashboard updates in real-time based on ECS metrics and task activity.
+- **Name**: `/ecs/strapi`  
+- **Purpose**: Streams container logs via the `awslogs` driver from ECS Task Definition.
 
-Verification Steps
-Log Streams:
+---
 
-Navigate to CloudWatch → Log groups → /ecs/strapi
+### 🔹 CloudWatch Alarms
 
-Confirm logs are streaming from latest ECS tasks.
+- **High CPU Utilization Alarm**  
+  - **Threshold**: CPU > 80%  
+  - **Duration**: For at least 2 consecutive evaluation periods (1 min each)
 
-Alarms:
+- **High Memory Utilization Alarm**  
+  - **Threshold**: Memory > 80%  
+  - **Duration**: For at least 2 consecutive evaluation periods (1 min each)
 
-Go to CloudWatch → Alarms → Check HighCPUUtilization and HighMemoryUtilization status.
+---
 
-Dashboard:
+### 🔹 CloudWatch Dashboard
 
-View metrics on StrapiMonitoringDashboard for live ECS resource tracking.
+- **Name**: `StrapiMonitoringDashboard`  
+- **Includes**:  
+  - CPU Utilization (ECS Service Level)  
+  - Memory Utilization (ECS Service Level)  
+- **Visualization**: Real-time time series view
 
-ECS Health:
+---
 
-ECS Console → Cluster → Services → Check service is RUNNING and stable.
+## ⚙️ How It Works
 
-Notes
-Alerts can be extended to SNS or email notifications in future.
+- ECS Task Definition includes a `logConfiguration` block using the `awslogs` driver.
+- Logs are streamed into the `/ecs/strapi` log group.
+- Metric alarms continuously evaluate resource usage.
+- The dashboard visualizes key metrics from ECS in real time.
 
-Log retention is set to 7 days (configurable in cloudwatch.tf).
+---
+
+## ✅ Verification Steps
+
+### 🔍 Log Streams
+- Go to: **CloudWatch → Log Groups → `/ecs/strapi`**
+- ✅ Confirm recent log streams are showing container logs from ECS tasks.
+
+### 🔍 Alarms
+- Go to: **CloudWatch → Alarms**
+- ✅ Check:
+  - `HighCPUUtilization`
+  - `HighMemoryUtilization`
+- Status should show **OK** unless thresholds are breached.
+
+### 🔍 Dashboard
+- Go to: **CloudWatch → Dashboards → `StrapiMonitoringDashboard`**
+- ✅ Confirm real-time graphs for CPU and Memory utilization.
+
+### 🔍 ECS Health
+- Go to: **ECS Console → Cluster → Services**
+- ✅ Ensure service status is **RUNNING** and stable.
+
+---
+
+## 💡 Notes
+
+- 📬 In future, alarms can be integrated with **SNS** to trigger **email or SMS notifications**.
+- 🗑️ Log retention is configured to **7 days** (modifiable via `cloudwatch.tf`).
+
+---

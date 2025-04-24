@@ -34,3 +34,12 @@ terraform/terraform.tfstate.*
 
 # By default, enforce LF line endings
 * text=auto eol=lf
+
+terraform2/.terraform.lock.hcl
+        terraform2/.terraform/        
+        terraform2/terraform.tfstate
+        terraform2/terraform.tfstate.backup
+
+        .terraform/
+*.tfstate
+*.tfstate.backup
