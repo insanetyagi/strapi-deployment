@@ -7,7 +7,7 @@ resource "aws_ecs_cluster" "tyagi_cluster" {
 resource "aws_ecs_task_definition" "tyagi_task" {
   family                   = "tyagi-task"
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
+  requires_compatibilities = ["FARGATE"]  # No change needed here
   cpu                      = "512"
   memory                   = "1024"
   execution_role_arn       = "arn:aws:iam::118273046134:role/ecsTaskExecutionRole1"
@@ -53,7 +53,14 @@ resource "aws_ecs_service" "tyagi_service" {
   cluster         = aws_ecs_cluster.tyagi_cluster.id
   task_definition = aws_ecs_task_definition.tyagi_task.arn
   desired_count   = 1
-  launch_type     = "FARGATE"
+
+  # CHANGE: Remove launch_type, add capacity_provider_strategy
+  # launch_type     = "FARGATE"   # <--- REMOVED this line
+
+  capacity_provider_strategy {       # <--- ADDED this block AS PER TODAY TASK
+    capacity_provider = "FARGATE_SPOT"
+    weight            = 1
+  }
 
   network_configuration {
     subnets         = aws_subnet.tyagi_subnet[*].id
