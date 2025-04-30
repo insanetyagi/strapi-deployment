@@ -42,8 +42,8 @@ jobs:
 
       - name: Trigger ECS Blue/Green Deployment using CodeDeploy
         run: |
-          aws deploy create-deployment \
-            --application-name tyagi-codedeploy-app \
-            --deployment-group-name tyagi-deployment-group \
-            --revision '{"revisionType":"ECS","ecsService":{"serviceName":"tyagi-service","clusterName":"tyagi-cluster"},"taskDefinition":"${{ steps.get_task_def.outputs.arn }}"}' \
-            --region us-east-1
+            aws deploy create-deployment \
+              --application-name tyagi-codedeploy-app \
+              --deployment-group-name tyagi-deployment-group \
+              --revision revisionType=ECS,ecsService={serviceName=tyagi-service,clusterName=tyagi-cluster},taskDefinition=${{ steps.get_task_def.outputs.arn }} \
+              --region us-east-1
