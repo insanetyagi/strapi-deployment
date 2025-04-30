@@ -1,7 +1,7 @@
 name: Deploy to ECS using Terraform and CodeDeploy
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Triggered manually via the GitHub UI
 
 jobs:
   deploy:
@@ -10,9 +10,15 @@ jobs:
     steps:
       # Step 1: Checkout repository code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      # Step 2: Configure AWS credentials
+      # Step 2: Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7 
+
+      # Step 3: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -20,53 +26,41 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Step 3: Setup Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
       # Step 4: Terraform Init
       - name: Terraform Init
-        run: terraform init
-        working-directory: terraform2/
+        run: |
+          cd terraform2
+          terraform init
 
       # Step 5: Terraform Plan
       - name: Terraform Plan
-        run: terraform plan
-        working-directory: terraform2/
+        run: |
+          cd terraform2
+          terraform plan
 
       # Step 6: Terraform Apply
       - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: terraform2/
+        run: |
+          cd terraform2
+          terraform apply -auto-approve
 
-      # Step 7: Get latest ECS Task Definition ARN
-      - name: Get latest ECS Task Definition ARN
+      # Step 7: Get ECS Task Definition ARN
+      - name: Get ECS Task Definition ARN
         id: get_task_def
         run: |
-          arn=$(aws ecs list-task-definitions \
+          TASK_ARN=$(aws ecs list-task-definitions \
             --family-prefix tyagi-task \
             --sort DESC \
             --max-items 1 \
-            --region us-east-1 \
-            --query "taskDefinitionArns[0]" \
+            --query 'taskDefinitionArns[0]' \
             --output text)
-          echo "Latest Task Definition ARN: $arn"
-          echo "arn=$arn" >> $GITHUB_OUTPUT
+          echo "taskDefinitionArn=$TASK_ARN" >> $GITHUB_OUTPUT
 
-      # Step 8: Trigger ECS Blue/Green Deployment using CodeDeploy
-      - name: Trigger ECS Blue/Green Deployment using CodeDeploy
+      # Step 8: Trigger CodeDeploy Deployment
+      - name: Trigger CodeDeploy Deployment
         run: |
-          echo "{" > revision.json
-          echo "  \"revisionType\": \"ECS\"," >> revision.json
-          echo "  \"ecsService\": {" >> revision.json
-          echo "    \"serviceName\": \"tyagi-service\"," >> revision.json
-          echo "    \"clusterName\": \"tyagi-cluster\"" >> revision.json
-          echo "  }," >> revision.json
-          echo "  \"taskDefinition\": \"${{ steps.get_task_def.outputs.arn }}\"" >> revision.json
-          echo "}" >> revision.json
-
           aws deploy create-deployment \
             --application-name tyagi-codedeploy-app \
             --deployment-group-name tyagi-deployment-group \
-            --revision file://revision.json \
-            --region us-east-1
+            --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
+            --revision revisionType=AppSpecContent,appSpecContent="{\"version\":\"1.0\",\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"${{ steps.get_task_def.outputs.taskDefinitionArn }}\",\"LoadBalancerInfo\":{\"ContainerName\":\"strapi\",\"ContainerPort\":80}}}}]}"
