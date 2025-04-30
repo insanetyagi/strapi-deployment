@@ -1,0 +1,8 @@
+{
+    "revision": {
+      "revisionType": "AppSpecContent",
+      "appSpecContent": {
+        "content": "{\"version\":\"0.0\",\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"arn:aws:ecs:us-east-1:471112855731:task-definition/tyagi-task:14\",\"LoadBalancerInfo\":{\"ContainerName\":\"strapi\",\"ContainerPort\":80}}}}]}"
+      }
+    }
+  }

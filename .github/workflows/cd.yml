@@ -44,7 +44,7 @@ jobs:
           cd terraform2
           terraform apply -auto-approve
 
-      # Step 7: Get ECS Task Definition ARN
+      # Step 7: Get the latest ECS Task Definition ARN
       - name: Get ECS Task Definition ARN
         id: get_task_def
         run: |
@@ -54,13 +54,25 @@ jobs:
             --max-items 1 \
             --query 'taskDefinitionArns[0]' \
             --output text)
-          echo "taskDefinitionArn=$TASK_ARN" >> $GITHUB_OUTPUT
+          echo "taskDefinitionArn=$TASK_ARN" >> $GITHUB_ENV
 
-      # Step 8: Trigger CodeDeploy Deployment
+      # Step 8: Prepare AppSpec JSON dynamically
+      - name: Prepare AppSpec JSON
+        run: |
+          echo '{
+            "revision": {
+              "revisionType": "AppSpecContent",
+              "appSpecContent": {
+                "content": "{\"version\":\"0.0\",\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"'${{ env.taskDefinitionArn }}'\",\"LoadBalancerInfo\":{\"ContainerName\":\"strapi\",\"ContainerPort\":80}}}}]}"
+              }
+            }
+          }' > appspec.json
+
+      # Step 9: Trigger CodeDeploy Deployment
       - name: Trigger CodeDeploy Deployment
         run: |
           aws deploy create-deployment \
             --application-name tyagi-codedeploy-app \
-            --deployment-group-name tyagi-deployment-group \
+            --deployment-group-name tyagi-codedeploy-group \
             --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
-            --revision revisionType=AppSpecContent,appSpecContent="{\"version\":\"1.0\",\"Resources\":[{\"TargetService\":{\"Type\":\"AWS::ECS::Service\",\"Properties\":{\"TaskDefinition\":\"${{ steps.get_task_def.outputs.taskDefinitionArn }}\",\"LoadBalancerInfo\":{\"ContainerName\":\"strapi\",\"ContainerPort\":80}}}}]}"
+            --cli-input-json file://appspec.json
