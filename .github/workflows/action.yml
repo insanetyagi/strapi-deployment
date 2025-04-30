@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ECR_REGISTRY: 118273046134.dkr.ecr.us-east-1.amazonaws.com
+      ECR_REGISTRY: 471112855731.dkr.ecr.us-east-1.amazonaws.com
       ECR_REPOSITORY: vishal-strapi-fargate
       IMAGE_TAG: latest
 
@@ -47,4 +47,4 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
-          #  test
+          

@@ -1,4 +1,4 @@
-name: Deploy to ECS using Terraform
+name: Deploy to ECS using Terraform and CodeDeploy
 
 on:
   workflow_dispatch:
@@ -32,3 +32,11 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform2/
+
+      - name: Trigger ECS Blue/Green Deployment using CodeDeploy
+        run: |
+          aws deploy create-deployment \
+            --application-name tyagi-codedeploy-app \
+            --deployment-group-name tyagi-deployment-group \
+            --revision revisionType=ECS,ecsTaskDefinition=${{ steps.task_definition.outputs.arn }} \
+            --region us-east-1

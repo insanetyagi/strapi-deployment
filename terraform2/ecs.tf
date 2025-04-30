@@ -3,18 +3,18 @@ resource "aws_ecs_cluster" "tyagi_cluster" {
   name = "tyagi-cluster"
 }
 
-# 2. ECS Task Definition 
+# 2. ECS Task Definition
 resource "aws_ecs_task_definition" "tyagi_task" {
   family                   = "tyagi-task"
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]  # No change needed here
+  requires_compatibilities = ["FARGATE"]
   cpu                      = "512"
   memory                   = "1024"
-  execution_role_arn       = "arn:aws:iam::118273046134:role/ecsTaskExecutionRole1"
+  execution_role_arn       = "arn:aws:iam::471112855731:role/ecsTaskExecutionRole1"
 
   container_definitions = jsonencode([{
     name      = "strapi"
-    image     = var.ecr_image_url
+    image     = var.ecr_image_url  # Ensure this variable points to the correct image URL
     essential = true
 
     portMappings = [{
@@ -47,18 +47,19 @@ resource "aws_ecs_task_definition" "tyagi_task" {
   }])
 }
 
-# 3. ECS Service
+# 3. ECS Service (Modified for CodeDeploy)
 resource "aws_ecs_service" "tyagi_service" {
   name            = "tyagi-service"
   cluster         = aws_ecs_cluster.tyagi_cluster.id
   task_definition = aws_ecs_task_definition.tyagi_task.arn
   desired_count   = 1
 
-  # CHANGE: Remove launch_type, add capacity_provider_strategy
-  # launch_type     = "FARGATE"   # <--- REMOVED this line
+  deployment_controller {
+    type = "CODE_DEPLOY"  # Enable Blue/Green deployment via CodeDeploy
+  }
 
-  capacity_provider_strategy {       # <--- ADDED this block AS PER TODAY TASK
-    capacity_provider = "FARGATE_SPOT"
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE_SPOT"  # Consider switching to regular Fargate for guaranteed availability
     weight            = 1
   }
 
@@ -68,10 +69,21 @@ resource "aws_ecs_service" "tyagi_service" {
     assign_public_ip = true
   }
 
+  # Load Balancer configuration for Blue target group (initial)
   load_balancer {
-    target_group_arn = aws_lb_target_group.tyagi_tg.arn
+    target_group_arn = aws_lb_target_group.tyagi_tg_blue.arn
     container_name   = "strapi"
     container_port   = 80
+  }
+
+  # CodeDeploy setup to manage traffic shifting
+  dynamic "load_balancer" {
+    for_each = var.is_green_deployment ? [aws_lb_target_group.tyagi_tg_green] : []
+    content {
+      target_group_arn = load_balancer.value.arn
+      container_name   = "strapi"
+      container_port   = 80
+    }
   }
 
   depends_on = [aws_lb_listener.tyagi_listener]
