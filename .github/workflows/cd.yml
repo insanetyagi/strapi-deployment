@@ -8,9 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repository code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -18,32 +20,55 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      # Step 3: Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # Step 4: Terraform Init
       - name: Terraform Init
         run: terraform init
         working-directory: terraform2/
 
+      # Step 5: Terraform Plan
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform2/
 
+      # Step 6: Terraform Apply
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform2/
 
+      # Step 7: Get latest ECS Task Definition ARN
       - name: Get latest ECS Task Definition ARN
         id: get_task_def
         run: |
-          arn=$(aws ecs list-task-definitions --family-prefix tyagi-task --sort DESC --max-items 1 --region us-east-1 --query "taskDefinitionArns[0]" --output text)
+          arn=$(aws ecs list-task-definitions \
+            --family-prefix tyagi-task \
+            --sort DESC \
+            --max-items 1 \
+            --region us-east-1 \
+            --query "taskDefinitionArns[0]" \
+            --output text)
           echo "Latest Task Definition ARN: $arn"
           echo "arn=$arn" >> $GITHUB_OUTPUT
 
+      # Step 8: Trigger ECS Blue/Green Deployment using CodeDeploy
       - name: Trigger ECS Blue/Green Deployment using CodeDeploy
         run: |
-            aws deploy create-deployment \
-              --application-name tyagi-codedeploy-app \
-              --deployment-group-name tyagi-deployment-group \
-              --revision revisionType=ECS,ecsService={serviceName=tyagi-service,clusterName=tyagi-cluster},taskDefinition=${{ steps.get_task_def.outputs.arn }} \
-              --region us-east-1
+          cat <<EOF > revision.json
+{
+  "revisionType": "ECS",
+  "ecsService": {
+    "serviceName": "tyagi-service",
+    "clusterName": "tyagi-cluster"
+  },
+  "taskDefinition": "${{ steps.get_task_def.outputs.arn }}"
+}
+EOF
+
+          aws deploy create-deployment \
+            --application-name tyagi-codedeploy-app \
+            --deployment-group-name tyagi-deployment-group \
+            --revision file://revision.json \
+            --region us-east-1
