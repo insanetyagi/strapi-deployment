@@ -56,16 +56,15 @@ jobs:
       # Step 8: Trigger ECS Blue/Green Deployment using CodeDeploy
       - name: Trigger ECS Blue/Green Deployment using CodeDeploy
         run: |
-          cat <<EOF > revision.json
-{
-  "revisionType": "ECS",
-  "ecsService": {
-    "serviceName": "tyagi-service",
-    "clusterName": "tyagi-cluster"
-  },
-  "taskDefinition": "${{ steps.get_task_def.outputs.arn }}"
-}
-EOF
+          echo "{" > revision.json
+          echo "  \"revisionType\": \"ECS\"," >> revision.json
+          echo "  \"ecsService\": {" >> revision.json
+          echo "    \"serviceName\": \"tyagi-service\"," >> revision.json
+          echo "    \"clusterName\": \"tyagi-cluster\"" >> revision.json
+          echo "  }," >> revision.json
+          echo "  \"taskDefinition\": \"${{ steps.get_task_def.outputs.arn }}\"" >> revision.json
+          echo "}" >> revision.json
+
           aws deploy create-deployment \
             --application-name tyagi-codedeploy-app \
             --deployment-group-name tyagi-deployment-group \
