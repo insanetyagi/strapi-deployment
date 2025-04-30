@@ -33,10 +33,17 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: terraform2/
 
+      - name: Get latest ECS Task Definition ARN
+        id: get_task_def
+        run: |
+          arn=$(aws ecs list-task-definitions --family-prefix tyagi-task --sort DESC --max-items 1 --region us-east-1 --query "taskDefinitionArns[0]" --output text)
+          echo "Latest Task Definition ARN: $arn"
+          echo "arn=$arn" >> $GITHUB_OUTPUT
+
       - name: Trigger ECS Blue/Green Deployment using CodeDeploy
         run: |
           aws deploy create-deployment \
             --application-name tyagi-codedeploy-app \
             --deployment-group-name tyagi-deployment-group \
-            --revision revisionType=ECS,ecsTaskDefinition=${{ steps.task_definition.outputs.arn }} \
+            --revision '{"revisionType":"ECS","ecsService":{"serviceName":"tyagi-service","clusterName":"tyagi-cluster"},"taskDefinition":"${{ steps.get_task_def.outputs.arn }}"}' \
             --region us-east-1
